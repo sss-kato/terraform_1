@@ -21,7 +21,7 @@ resource "aws_vpc" "vpc" {
 }
 
 
-# Variables
+# Variables 
 variable "project" {
   type = string
 }
