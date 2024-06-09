@@ -20,6 +20,37 @@ resource "aws_vpc" "vpc" {
 
 }
 
+# Subnet
+# Public
+resource "aws_subnet" "subnet_1a" {
+  vpc_id                  = aws_vpc.vpc.id
+  availabilty_zone        = "ap-northeast-1a"
+  cidr_block              = "192.168.1.0/24"
+  map_public_ip_on_launce = true
+
+  tags = {
+    Name    = "${var.project}-${var.env}-vpc"
+    Project = var.project
+    Env     = var.env
+    Type    = "public"
+  }
+}
+
+# Public
+resource "aws_subnet" "subnet_1c" {
+  vpc_id                  = aws_vpc.vpc.id
+  availabilty_zone        = "ap-northeast-1c"
+  cidr_block              = "192.168.2.0/24"
+  map_public_ip_on_launce = true
+
+  tags = {
+    Name    = "${var.project}-${var.env}-vpc"
+    Project = var.project
+    Env     = var.env
+    Type    = "public"
+  }
+}
+
 
 # Variables
 variable "project" {
