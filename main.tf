@@ -24,12 +24,12 @@ resource "aws_vpc" "vpc" {
 # Public
 resource "aws_subnet" "public_subnet_1a" {
   vpc_id                  = aws_vpc.vpc.id
-  availability_zone        = "ap-northeast-1a"
+  availability_zone       = "ap-northeast-1a"
   cidr_block              = "192.168.1.0/24"
   map_public_ip_on_launch = true
 
   tags = {
-    Name    = "${var.project}-${var.env}-vpc"
+    Name    = "${var.project}-${var.env}-public-subnet-1a"
     Project = var.project
     Env     = var.env
     Type    = "public"
@@ -39,12 +39,12 @@ resource "aws_subnet" "public_subnet_1a" {
 # Public
 resource "aws_subnet" "public_subnet_1c" {
   vpc_id                  = aws_vpc.vpc.id
-  availability_zone        = "ap-northeast-1c"
+  availability_zone       = "ap-northeast-1c"
   cidr_block              = "192.168.2.0/24"
   map_public_ip_on_launch = true
 
   tags = {
-    Name    = "${var.project}-${var.env}-vpc"
+    Name    = "${var.project}-${var.env}-public-subnet-1c"
     Project = var.project
     Env     = var.env
     Type    = "public"
@@ -54,12 +54,12 @@ resource "aws_subnet" "public_subnet_1c" {
 #Private
 resource "aws_subnet" "private_subnet_1a" {
   vpc_id                  = aws_vpc.vpc.id
-  availability_zone        = "ap-northeast-1a"
+  availability_zone       = "ap-northeast-1a"
   cidr_block              = "192.168.3.0/24"
   map_public_ip_on_launch = false
 
   tags = {
-    Name    = "${var.project}-${var.env}-vpc"
+    Name    = "${var.project}-${var.env}-private-subnet-1a"
     Project = var.project
     Env     = var.env
     Type    = "private"
@@ -69,16 +69,75 @@ resource "aws_subnet" "private_subnet_1a" {
 #Private
 resource "aws_subnet" "private_subnet_1c" {
   vpc_id                  = aws_vpc.vpc.id
-  availability_zone        = "ap-northeast-1c"
+  availability_zone       = "ap-northeast-1c"
   cidr_block              = "192.168.4.0/24"
   map_public_ip_on_launch = false
 
   tags = {
-    Name    = "${var.project}-${var.env}-vpc"
+    Name    = "${var.project}-${var.env}-private-subnet-1c"
     Project = var.project
     Env     = var.env
     Type    = "private"
   }
+}
+
+# Route Table
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name    = "${var.project}-${var.env}-public-rt"
+    Project = var.project
+    Env     = var.env
+    Type    = "public"
+  }
+}
+
+resource "aws_route_table_association" "public_rt_1a" {
+  route_table_id = aws_route_table.public_rt.id
+  subnet_id      = aws_subnet.public_subnet_1a.id
+}
+
+resource "aws_route_table_association" "public_rt_1c" {
+  route_table_id = aws_route_table.public_rt.id
+  subnet_id      = aws_subnet.public_subnet_1c.id
+}
+
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name    = "${var.project}-${var.env}-private-rt"
+    Project = var.project
+    Env     = var.env
+    Type    = "public"
+  }
+}
+
+resource "aws_route_table_association" "private_rt_1a" {
+  route_table_id = aws_route_table.private_rt.id
+  subnet_id      = aws_subnet.private_subnet_1a.id
+}
+
+resource "aws_route_table_association" "private_rt_1c" {
+  route_table_id = aws_route_table.private_rt.id
+  subnet_id      = aws_subnet.private_subnet_1c.id
+}
+
+# Internet GateWay
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.vpc.id
+  tags = {
+    Name    = "${var.project}-${var.env}-igw"
+    Project = var.project
+    Env     = var.env
+  }
+}
+
+resource "aws_route" "rt_igw" {
+  route_table_id         = aws_route_table.public_rt.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.igw.id
 }
 
 # Variables
