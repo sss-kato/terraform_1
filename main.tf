@@ -25,7 +25,7 @@ resource "aws_vpc" "vpc" {
 resource "aws_subnet" "public_subnet_1a" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = "ap-northeast-1a"
-  cidr_block              = "192.168.1.0/24"
+  cidr_block             = "192.168.1.0/24"
   map_public_ip_on_launch = true
 
   tags = {
@@ -40,7 +40,7 @@ resource "aws_subnet" "public_subnet_1a" {
 resource "aws_subnet" "public_subnet_1c" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = "ap-northeast-1c"
-  cidr_block              = "192.168.2.0/24"
+  cidr_block             = "192.168.2.0/24"
   map_public_ip_on_launch = true
 
   tags = {
@@ -55,7 +55,7 @@ resource "aws_subnet" "public_subnet_1c" {
 resource "aws_subnet" "private_subnet_1a" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = "ap-northeast-1a"
-  cidr_block              = "192.168.3.0/24"
+  cidr_block             = "192.168.3.0/24"
   map_public_ip_on_launch = false
 
   tags = {
@@ -70,7 +70,7 @@ resource "aws_subnet" "private_subnet_1a" {
 resource "aws_subnet" "private_subnet_1c" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = "ap-northeast-1c"
-  cidr_block              = "192.168.4.0/24"
+  cidr_block             = "192.168.4.0/24"
   map_public_ip_on_launch = false
 
   tags = {
@@ -135,16 +135,16 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_route" "rt_igw" {
-  route_table_id         = aws_route_table.public_rt.id
+  route_table_id          = aws_route_table.public_rt.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.igw.id
+  gateway_id              = aws_internet_gateway.igw.id
 }
 
 # Securiry Group
-resource "aws_security_group" "web_sg"{
-        name = "${var.project}-${var.env}-web-sg"
-        description = "web servere security group"
-        vpc_id = aws_vpc.vpc.id
+resource "aws_security_group" "web_sg" {
+  name        = "${var.project}-${var.env}-web-sg"
+  description = "web servere security group"
+  vpc_id      = aws_vpc.vpc.id
   tags = {
     Name    = "${var.project}-${var.env}-web-sg"
     Project = var.project
@@ -152,14 +152,53 @@ resource "aws_security_group" "web_sg"{
   }
 }
 
-resource "aws_security_group_rule" "web_inbound_http"{
-        security_group_id = aws_security_group.web_sg.id
-        type = "ingress"
-        protocol = "tcp"
-        from_port = "80"
-        to_port = "80"
-        cidr_block = ["0.0.0.0/0"]
+resource "aws_security_group_rule" "web_inbound_http" {
+  security_group_id = aws_security_group.web_sg.id
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = "80"
+  to_port           = "80"
+  cidr_blocks       = ["0.0.0.0/0"]
 }
+
+resource "aws_security_group_rule" "web_inbound_https" {
+  security_group_id = aws_security_group.web_sg.id
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = "443"
+  to_port           = "443"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "web_outbound_db" {
+  security_group_id        = aws_security_group.web_sg.id
+  type                     = "egress"
+  protocol                 = "tcp"
+  from_port                = "3306"
+  to_port                  = "3306"
+  source_security_group_id = aws_security_group.db_sg.id
+}
+
+resource "aws_security_group" "db_sg" {
+  name        = "${var.project}-${var.env}-db-sg"
+  description = "database security group"
+  vpc_id      = aws_vpc.vpc.id
+  tags = {
+    Name    = "${var.project}-${var.env}-db-sg"
+    Project = var.project
+    Env     = var.env
+  }
+}
+
+resource "aws_security_group_rule" "db_inbound" {
+  security_group_id        = aws_security_group.web_sg.id
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = "3306"
+  to_port                  = "3306"
+  source_security_group_id = aws_security_group.web_sg.id
+}
+
 
 # Variables
 variable "project" {
