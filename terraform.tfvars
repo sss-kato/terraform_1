@@ -1,2 +1,2 @@
-project = "learning_terraform1"
+project = "learning-terraform1"
 env     = "dev"

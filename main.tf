@@ -25,7 +25,7 @@ resource "aws_vpc" "vpc" {
 resource "aws_subnet" "public_subnet_1a" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = "ap-northeast-1a"
-  cidr_block             = "192.168.1.0/24"
+  cidr_block              = "192.168.1.0/24"
   map_public_ip_on_launch = true
 
   tags = {
@@ -40,7 +40,7 @@ resource "aws_subnet" "public_subnet_1a" {
 resource "aws_subnet" "public_subnet_1c" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = "ap-northeast-1c"
-  cidr_block             = "192.168.2.0/24"
+  cidr_block              = "192.168.2.0/24"
   map_public_ip_on_launch = true
 
   tags = {
@@ -55,7 +55,7 @@ resource "aws_subnet" "public_subnet_1c" {
 resource "aws_subnet" "private_subnet_1a" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = "ap-northeast-1a"
-  cidr_block             = "192.168.3.0/24"
+  cidr_block              = "192.168.3.0/24"
   map_public_ip_on_launch = false
 
   tags = {
@@ -70,7 +70,7 @@ resource "aws_subnet" "private_subnet_1a" {
 resource "aws_subnet" "private_subnet_1c" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = "ap-northeast-1c"
-  cidr_block             = "192.168.4.0/24"
+  cidr_block              = "192.168.4.0/24"
   map_public_ip_on_launch = false
 
   tags = {
@@ -135,9 +135,9 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_route" "rt_igw" {
-  route_table_id          = aws_route_table.public_rt.id
+  route_table_id         = aws_route_table.public_rt.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id              = aws_internet_gateway.igw.id
+  gateway_id             = aws_internet_gateway.igw.id
 }
 
 # Securiry Group
@@ -201,21 +201,29 @@ resource "aws_security_group_rule" "db_inbound" {
 
 
 # RDS
-resource "aws_db_parameter_group" "mysql_parametergroup"{
-        name = "${var.project}-${var.env}-mysql"
-        family = "mysql8.0"
+resource "aws_db_parameter_group" "mysql_parameter_group" {
+  name   = "${var.project}-${var.env}-mysql-parametergroup"
+  family = "mysql8.0"
 
-        parameter{
-                name = "character_set_database"
-                value = "utf8mb4"
-        }
+  parameter {
+    name  = "character_set_database"
+    value = "utf8mb4"
+  }
 
-        parameter{
-                name = "character_set_server"
-                value = "utf8mb4"
-        }
+  parameter {
+    name  = "character_set_server"
+    value = "utf8mb4"
+  }
 
+}
 
+resource "aws_db_option_group" "mysql_option_group" {
+  name                 = "${var.project}-${var.env}-mysql-optiongroup"
+  engine_name          = "mysql"
+  major_engine_version = "8.0"
+  option {
+    option_name = "MARIADB_AUDIT_PLUGIN"
+  }
 }
 
 
