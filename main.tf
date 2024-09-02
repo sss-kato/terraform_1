@@ -226,6 +226,19 @@ resource "aws_db_option_group" "mysql_option_group" {
   }
 }
 
+resource "aws_db_subnet_group" "mysql_subnet_group" {
+  name = "${var.project}-${var.env}-mysql-optiongroup"
+  subnet_ids = [
+    aws_subnet.private_subnet_1a.id,
+    aws_subnet.private_subnet_1c.id
+  ]
+
+  tags = {
+    Name    = "${var.project}-${var.env}-mysql-subnet-group"
+    Project = var.project
+    Env     = var.env
+  }
+}
 
 # Variables
 variable "project" {
