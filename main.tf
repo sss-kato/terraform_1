@@ -240,6 +240,18 @@ resource "aws_db_subnet_group" "mysql_subnet_group" {
   }
 }
 
+
+
+resource "aws_db_instance" "mysql_instance"{
+        engine = "mysql"
+        engine_version = "8.0.20"
+
+        identifier = "${var.project}-${var.env}-mysql-instance"
+        
+        username = "admin"
+        password = ""
+}
+
 # Variables
 variable "project" {
   type = string
