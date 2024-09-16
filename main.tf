@@ -240,8 +240,6 @@ resource "aws_db_subnet_group" "mysql_subnet_group" {
   }
 }
 
-
-
 resource "aws_db_instance" "mysql_instance"{
         engine = "mysql"
         engine_version = "8.0.20"
@@ -250,7 +248,19 @@ resource "aws_db_instance" "mysql_instance"{
         
         username = "admin"
         password = ""
+
+        instance_class = "db.t2.micro"
+
+        allocated_storage = 20
+        max_allocated_storage = 50
+        storage_type = "gb2"
+        storage_encrypted = false
+
+
 }
+
+
+
 
 # Variables
 variable "project" {
