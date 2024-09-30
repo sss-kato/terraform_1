@@ -256,6 +256,14 @@ resource "aws_db_instance" "mysql_instance"{
         storage_type = "gb2"
         storage_encrypted = false
 
+        multi_az = false
+        availability_zone = "ap-northeast-1a"
+        db_subnet_group_name = aws_db_subnet_group.mysql_subnet_group.name
+        vpc_security_group_ids = [aws_security_group.db_sg.id]
+        public_accessible = false
+        port = 3306
+
+
 
 }
 
