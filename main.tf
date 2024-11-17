@@ -260,10 +260,10 @@ resource "aws_db_instance" "mysql_instance" {
   availability_zone      = "ap-northeast-1a"
   db_subnet_group_name   = aws_db_subnet_group.mysql_subnet_group.name
   vpc_security_group_ids = [aws_security_group.db_sg.id]
-  publicly_accessible      = false
+  publicly_accessible    = false
   port                   = 3306
 
-  backup_window             = "04:00-05:00"
+  backup_window              = "04:00-05:00"
   backup_retention_period    = 7
   maintenance_window         = "Mon:05:30-Mon:08:30"
   auto_minor_version_upgrade = false
@@ -279,8 +279,20 @@ resource "aws_db_instance" "mysql_instance" {
     Env     = var.env
   }
 
+}
 
+resource "aws_lb" "alb" {
+  name               = "${var.project}-${var.env}-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups = [
+    aws_security_group.web_sg.id
+  ]
 
+  subnets = [
+    aws_subnet.public_subnet_1a.id,
+    aws_subnet.public_subnet_1c.id,
+  ]
 }
 
 
