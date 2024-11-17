@@ -217,6 +217,7 @@ resource "aws_db_parameter_group" "mysql_parameter_group" {
 
 }
 
+// RDS
 resource "aws_db_option_group" "mysql_option_group" {
   name                 = "${var.project}-${var.env}-mysql-optiongroup"
   engine_name          = "mysql"
@@ -281,6 +282,7 @@ resource "aws_db_instance" "mysql_instance" {
 
 }
 
+//ALB
 resource "aws_lb" "alb" {
   name               = "${var.project}-${var.env}-alb"
   internal           = false
