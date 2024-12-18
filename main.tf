@@ -314,6 +314,17 @@ resource "aws_lb_target_group" "alb_target_group" {
 #         target_id = aws_instance.
 # }
 
+# key pair
+resource "aws_key_pair" "key_pair" {
+  key_name   = "${var.project}-${var.env}-keypair"
+  public_key = file("./key/learning-terraform1-dev-keypair.pub")
+  tags = {
+    Name    = "${var.project}-${var.env}-app-tg"
+    Project = var.project
+    Env     = var.env
+  }
+}
+
 
 
 
